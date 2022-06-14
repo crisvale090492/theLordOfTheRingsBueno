@@ -9,7 +9,7 @@ class CharacterController {
 
     @GetMapping("getHumans")
     fun getHumans(): List<Doc> {
-        var listaHumanos = mutableListOf<Doc>()
+        val listaHumanos = mutableListOf<Doc>()
         characterList.docs.forEach {
             if (it.race == "Human")
                 listaHumanos.add(it)
