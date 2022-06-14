@@ -7,14 +7,15 @@ import kotlinx.serialization.encoding.*
 
 @Serializable
 data class CharacterList (
-    val docs: List<Doc>
+    val docs: List<Doc>,
+
 )
 
 @Serializable
 data class Doc (
     @SerialName("_id")
     val id: String,
-
+    var miUsuario: String? = null,
     val height: String,
     val race: String,
     val gender: String? = null,
