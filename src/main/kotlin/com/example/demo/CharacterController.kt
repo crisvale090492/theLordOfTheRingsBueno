@@ -21,7 +21,7 @@ class CharacterController {
     fun getElfs(): List<Doc> {
         val listaElfs = mutableListOf<Doc>()
         characterList.docs.forEach {
-            if (it.race == "Elfs")
+            if (it.race == "Elf")
                 listaElfs.add(it)
         }
         return listaElfs
@@ -31,7 +31,7 @@ class CharacterController {
     fun getOrcs(): List<Doc> {
         val listaOrcs = mutableListOf<Doc>()
         characterList.docs.forEach {
-            if (it.race == "Orcs")
+            if (it.race == "Orc"||it.race == "Orcs")
                 listaOrcs.add(it)
         }
         return listaOrcs
@@ -41,7 +41,7 @@ class CharacterController {
     fun getDragons(): List<Doc> {
         val listaDragons = mutableListOf<Doc>()
         characterList.docs.forEach {
-            if (it.race == "Dragons")
+            if (it.race == "Dragon"||it.race == "Dragons")
                 listaDragons.add(it)
         }
         return listaDragons
@@ -51,7 +51,7 @@ class CharacterController {
     fun getGoodGuys(): List<Doc> {
         val listaGoodGuys = mutableListOf<Doc>()
         characterList.docs.forEach {
-            if (it.race == "Humans" || it.race == "Elfs")
+            if (it.race == "Human" || it.race == "Elf")
                 listaGoodGuys.add(it)
         }
         return listaGoodGuys
@@ -61,7 +61,7 @@ class CharacterController {
     fun getBadGuys(): List<Doc> {
         val listaBadGuys = mutableListOf<Doc>()
         characterList.docs.forEach {
-            if (it.race == "Orcs" || it.race == "Dragons")
+            if (it.race == "Orc" || it.race == "Dragon")
                 listaBadGuys.add(it)
         }
         return listaBadGuys
@@ -71,7 +71,7 @@ class CharacterController {
     fun getOthers(): List<Doc> {
         val listaOthers = mutableListOf<Doc>()
         characterList.docs.forEach {
-            if (it.race != "Orcs" && it.race != "Dragons" && it.race != "Elfs" && it.race != "Humans")
+            if (it.race != "Orc" && it.race != "Dragon" && it.race != "Elf" && it.race != "Human")
                 listaOthers.add(it)
         }
         return listaOthers

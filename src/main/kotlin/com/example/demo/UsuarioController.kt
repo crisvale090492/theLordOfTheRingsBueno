@@ -12,7 +12,7 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
 
     @GetMapping("registrarUsuario/{nombre}/{pass}")
     @Synchronized
-    fun requestCrearUsuario(@PathVariable nombre: String, @PathVariable pass: String): String {
+    fun requestregistrarUsuario(@PathVariable nombre: String, @PathVariable pass: String): String {
         val userOptional = usuarioRepository.findById(nombre)
 
         return if (userOptional.isPresent) {
@@ -31,8 +31,8 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
     }
 
     @PostMapping("asignarEquipo/{token}")
-    fun obtenerEquipo(@PathVariable token: String): Any {
-        val equipo = mutableListOf<Int>()
+    fun asignarEquipo(@PathVariable token: String): Any {
+        val equipo = mutableListOf<String>()
         var user: Usuario? = null
         var personaje: Doc
         var cantidad = 0
@@ -49,9 +49,12 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
             personaje = characterList.docs.random()
             if (personaje.miUsuario == null) {
                 personaje.miUsuario = user?.token
-                equipo.add(personaje.id.toInt())
+                equipo.add(personaje.id)
                 cantidad++
             }
+        }
+        user?.let {
+            usuarioRepository.save(it)
         }
         return equipo
     }
@@ -80,8 +83,12 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
         else {
             personaje?.miUsuario = null
             user?.equipo?.remove(personaje?.id?.toInt())
+            user?.let {
+                usuarioRepository.save(it)
+            }
             "Personaje liberado"
         }
+
     }
 
 }
