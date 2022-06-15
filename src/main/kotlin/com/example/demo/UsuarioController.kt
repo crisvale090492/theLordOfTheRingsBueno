@@ -32,7 +32,7 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
 
     @PostMapping("asignarEquipo/{token}")
     fun asignarEquipo(@PathVariable token: String): Any {
-        val equipo = mutableListOf<String>()
+        val equipo = mutableListOf<Doc>()
         var user: Usuario? = null
         var personaje: Doc
         var cantidad = 0
@@ -49,7 +49,7 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
             personaje = characterList.docs.random()
             if (personaje.miUsuario == null) {
                 personaje.miUsuario = user?.token
-                equipo.add(personaje.id)
+                equipo.add(personaje)
                 cantidad++
             }
         }
@@ -71,7 +71,7 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
         }
         if (user == null)
             return "Error: Token invalido"
-
+        print(user?.equipo)
         characterList.docs.forEach { character ->
             if(character.id == personajeId)
                 personaje = character
@@ -82,9 +82,10 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
             "El personaje no pertenece al jugador"
         else {
             personaje?.miUsuario = null
-            user?.equipo?.remove(personaje?.id?.toInt())
+            user?.equipo?.remove(personaje.toString())
             user?.let {
                 usuarioRepository.save(it)
+                print(user?.equipo)
             }
             "Personaje liberado"
         }

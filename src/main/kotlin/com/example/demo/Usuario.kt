@@ -6,8 +6,8 @@ import javax.persistence.Id
 
 
 @Entity
-class Usuario (@Id var nombre: String, var pass: String) {
+data class Usuario (@Id var nombre: String, var pass: String) {
     val token = nombre + pass
     @ElementCollection
-    var equipo = mutableListOf<Int>()
+    var equipo = mutableListOf<String>()
 }
