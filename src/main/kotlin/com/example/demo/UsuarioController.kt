@@ -32,7 +32,7 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
 
     @PostMapping("asignarEquipo/{token}")
     fun asignarEquipo(@PathVariable token: String): Any {
-        val equipo = mutableListOf<Doc>()
+        val equipo = mutableListOf<String>()
         var user: Usuario? = null
         var personaje: Doc
         var cantidad = 0
@@ -49,7 +49,7 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
             personaje = characterList.docs.random()
             if (personaje.miUsuario == null) {
                 personaje.miUsuario = user?.token
-                equipo.add(personaje)
+                equipo.add(personaje.id)
                 cantidad++
             }
         }
@@ -82,7 +82,7 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
             "El personaje no pertenece al jugador"
         else {
             personaje?.miUsuario = null
-            user?.equipo?.remove(personaje.toString())
+            user?.equipo?.remove(personaje?.id)
             user?.let {
                 usuarioRepository.save(it)
                 print(user?.equipo)
@@ -91,5 +91,44 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
         }
 
     }
+
+    @PostMapping("nivelFacil/{token}")
+    fun nivelfacil(@PathVariable token: String): Any {
+        var user: Usuario? = null
+        val equipoFinal = mutableListOf<Doc>()
+        usuarioRepository.findAll().forEach { currentUser ->
+            if (currentUser.token == token) {
+                user = currentUser
+                return@forEach
+            }
+        }
+        if (user == null)
+            return "Error: Usuario no encontrado"
+
+        if (user?.facil == true)
+            return "Error: Mazmorra ya superada"
+
+        else
+            user?.equipo?.forEach { personaje ->
+                val probabilidad = Random.nextInt(0,100)
+                if (probabilidad < 25) {
+                    personaje.vivo = false
+                }
+                else {
+                    user?.facil = true
+                }
+                equipoFinal.add(personaje)
+            }
+
+        if (user?.facil == false)
+            return "Equipo muerto"
+        else
+            user?.equipo?.forEach { personaje ->
+               if (personaje.vivo == false)
+                   user?.equipo?.remove(personaje)
+            }
+        return equipoFinal
+    }
+
 
 }

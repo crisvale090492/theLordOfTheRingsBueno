@@ -16,6 +16,7 @@ data class Doc (
     @SerialName("_id")
     val id: String,
     var miUsuario: String? = null,
+    var vivo: Boolean = true,
     val height: String,
     val race: String,
     val gender: String? = null,
