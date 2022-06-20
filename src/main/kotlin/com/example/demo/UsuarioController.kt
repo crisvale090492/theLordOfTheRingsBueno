@@ -120,7 +120,7 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
         if (user?.facil == true)
             return "Error: Mazmorra ya superada"
 
-        else
+        else {
             user?.equipo?.forEach { personaje ->
                 characterList.docs.forEach { character ->
                     if (personaje == character.id && probabilidad < 25) {
@@ -137,6 +137,7 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
                     print(user?.equipo)
                 }
             }
+        }
 
         return if (user?.equipo?.size == 0)
             "Equipo muerto"
@@ -161,7 +162,7 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
         if (user?.medio == true)
             return "Error: Mazmorra ya superada"
 
-        else
+        else {
             user?.equipo?.forEach { personaje ->
                 characterList.docs.forEach { character ->
                     if (personaje == character.id && probabilidad < 50) {
@@ -178,6 +179,7 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
                     print(user?.equipo)
                 }
             }
+        }
 
         return if (user?.equipo?.size == 0)
             "Equipo muerto"
@@ -200,21 +202,24 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
         if (user == null)
             return "Error: Usuario no encontrado"
 
-
-        user?.equipo?.forEach { personaje ->
-            characterList.docs.forEach { character ->
-                if (personaje == character.id && probabilidad < 75) {
-                    character.vivo = false
-                    equipoFinal.add(character)
-                    user?.equipo?.remove(personaje)
+        if (user?.medio == true)
+            return "Error: Mazmorra ya superada"
+        else {
+            user?.equipo?.forEach { personaje ->
+                characterList.docs.forEach { character ->
+                    if (personaje == character.id && probabilidad < 75) {
+                        character.vivo = false
+                        equipoFinal.add(character)
+                        user?.equipo?.remove(personaje)
+                        }
+                    else {
+                        user?.dificil = true
                     }
-                else {
-                    user?.dificil = true
                 }
-            }
-            user?.let {
-                usuarioRepository.save(it)
-                print(user?.equipo)
+                user?.let {
+                    usuarioRepository.save(it)
+                    print(user?.equipo)
+                }
             }
         }
 
