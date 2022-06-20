@@ -36,6 +36,7 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
         var user: Usuario? = null
         var personaje: Doc
         var cantidad = 0
+        var tamano = 5
         usuarioRepository.findAll().forEach { currentUser ->
             if (currentUser.token == token) {
                 user = currentUser
@@ -45,7 +46,17 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
         if (user == null)
             return "Error: Token invalido"
 
-        while (cantidad <= 5) {
+        if (user?.facil == true && user?.medio == true && user?.dificil == true) {
+            tamano += 1
+            user?.equipo?.forEach {  personaje ->
+                user?.equipo?.remove(personaje)
+            }
+            user?.facil = false
+            user?.medio = false
+            user?.dificil = false
+        }
+
+        while (cantidad <= tamano) {
             personaje = characterList.docs.random()
             if (personaje.miUsuario == null) {
                 personaje.miUsuario = user?.token
@@ -96,6 +107,7 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
     fun nivelfacil(@PathVariable token: String): Any {
         var user: Usuario? = null
         val equipoFinal = mutableListOf<Doc>()
+        val probabilidad = Random.nextInt(0,100)
         usuarioRepository.findAll().forEach { currentUser ->
             if (currentUser.token == token) {
                 user = currentUser
@@ -110,24 +122,106 @@ class UsuarioController (private val usuarioRepository: UsuarioRepository) {
 
         else
             user?.equipo?.forEach { personaje ->
-                val probabilidad = Random.nextInt(0,100)
-                if (probabilidad < 25) {
-                    personaje.vivo = false
+                characterList.docs.forEach { character ->
+                    if (personaje == character.id && probabilidad < 25) {
+                        character.vivo = false
+                        equipoFinal.add(character)
+                        user?.equipo?.remove(personaje)
+                    }
+                    else {
+                        user?.facil = true
+                    }
                 }
-                else {
-                    user?.facil = true
+                user?.let {
+                    usuarioRepository.save(it)
+                    print(user?.equipo)
                 }
-                equipoFinal.add(personaje)
             }
 
-        if (user?.facil == false)
-            return "Equipo muerto"
+        return if (user?.equipo?.size == 0)
+            "Equipo muerto"
+        else
+            equipoFinal
+    }
+
+    @PostMapping("nivelMedio/{token}")
+    fun nivelMedio(@PathVariable token: String): Any {
+        var user: Usuario? = null
+        val equipoFinal = mutableListOf<Doc>()
+        val probabilidad = Random.nextInt(0,100)
+        usuarioRepository.findAll().forEach { currentUser ->
+            if (currentUser.token == token) {
+                user = currentUser
+                return@forEach
+            }
+        }
+        if (user == null)
+            return "Error: Usuario no encontrado"
+
+        if (user?.medio == true)
+            return "Error: Mazmorra ya superada"
+
         else
             user?.equipo?.forEach { personaje ->
-               if (personaje.vivo == false)
-                   user?.equipo?.remove(personaje)
+                characterList.docs.forEach { character ->
+                    if (personaje == character.id && probabilidad < 50) {
+                        character.vivo = false
+                        equipoFinal.add(character)
+                        user?.equipo?.remove(personaje)
+                    }
+                    else {
+                        user?.medio = true
+                    }
+                }
+                user?.let {
+                    usuarioRepository.save(it)
+                    print(user?.equipo)
+                }
             }
-        return equipoFinal
+
+        return if (user?.equipo?.size == 0)
+            "Equipo muerto"
+        else
+            equipoFinal
+    }
+
+    @PostMapping("nivelDificil/{token}")
+    fun nivelDificil(@PathVariable token: String): Any {
+        var user: Usuario? = null
+        val equipoFinal = mutableListOf<Doc>()
+        val probabilidad = Random.nextInt(0,100)
+        usuarioRepository.findAll().forEach { currentUser ->
+            if (currentUser.token == token) {
+                user = currentUser
+                return@forEach
+            }
+        }
+
+        if (user == null)
+            return "Error: Usuario no encontrado"
+
+
+        user?.equipo?.forEach { personaje ->
+            characterList.docs.forEach { character ->
+                if (personaje == character.id && probabilidad < 75) {
+                    character.vivo = false
+                    equipoFinal.add(character)
+                    user?.equipo?.remove(personaje)
+                    }
+                else {
+                    user?.dificil = true
+                }
+            }
+            user?.let {
+                usuarioRepository.save(it)
+                print(user?.equipo)
+            }
+        }
+
+        return if (user?.equipo?.size == 0)
+            "Equipo muerto"
+        else
+            equipoFinal
     }
 
 
